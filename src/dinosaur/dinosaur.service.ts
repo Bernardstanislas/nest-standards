@@ -8,4 +8,8 @@ export class DinosaurService {
   constructor(
     @InjectRepository(Dinosaur) private readonly dinoRepo: Repository<Dinosaur>,
   ) {}
+
+  async checkIfDinosaursStillExist() {
+    return (await this.dinoRepo.count()) > 0;
+  }
 }
