@@ -2,19 +2,18 @@ import { DinosaurService } from 'src/dinosaur/dinosaur.service';
 import { mock } from 'jest-mock-extended';
 import { Repository } from 'typeorm';
 import { Dinosaur } from 'src/dinosaur/dinosaur.entity';
-
-type DinosaurRepository = Repository<Dinosaur>;
+import { buildSystemUnderTest } from 'test/utils';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 describe('The dinosaur service', () => {
   let service: DinosaurService;
-  const dinoRepoMock = {
-    count: jest.fn(),
-  };
+  const dinoRepoMock = mock<Repository<Dinosaur>>();
 
-  beforeAll(() => {
-    const dinoRepo = (mock<DinosaurRepository>() as never) as DinosaurRepository;
-    service = new DinosaurService(dinoRepo);
-    dinoRepo.count = dinoRepoMock.count;
+  beforeAll(async () => {
+    service = await buildSystemUnderTest(DinosaurService, {
+      provide: getRepositoryToken(Dinosaur),
+      useValue: dinoRepoMock,
+    });
   });
 
   it('exists', () => {
